@@ -1,0 +1,44 @@
+{
+  "groups": [
+    {
+      "title": "Blocks",
+      "id": "blocks",
+      "components": [
+        {
+          "title": "Fragment",
+          "id": "fragment",
+          "plugins": {
+            "da": {
+              "unsafeHTML": "<p><a href=\"/fragments/\">/fragments/</a></p>",
+              "fields": [
+                {
+                  "name": "content",
+                  "selector": "a"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "title": "Hero",
+          "id": "hero",
+          "plugins": {
+            "da": {
+              "unsafeHTML": "<div class=\"hero\"><div><div><picture><img loading=\"lazy\" alt=\"\" src=\"\"></picture></div></div><div><div><h1>Hero Heading</h1><p>Description text goes here.</p></div></div></div>",
+              "fields": [
+                {
+                  "name": "image",
+                  "selector": "div:nth-child(1)>div>picture>img[src]"
+                },
+                {
+                  "name": "content",
+                  "selector": "div:nth-child(2)>div"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

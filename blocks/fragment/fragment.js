@@ -49,9 +49,9 @@ export default async function decorate(block) {
   if (!fragment) return;
 
   const wrapper = block.closest('.fragment-wrapper');
-  const section = wrapper.closest('.section');
+  const section = wrapper?.closest('.section');
 
-  if (section && section.children.length === 1) {
+  if (wrapper && section && section.children.length === 1) {
     // fragment is the ONLY child of its section; replace the whole section
     section.replaceWith(...fragment.childNodes);
   } else {
