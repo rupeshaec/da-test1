@@ -54,11 +54,16 @@ export default async function decorate(block) {
   if (wrapper && section && section.children.length === 1) {
     // fragment is the ONLY child of its section; replace the whole section
     section.replaceWith(...fragment.childNodes);
+  } else if (wrapper) {
+    // fragment shares section with other children; flatten the fragment's sections
+    // into the wrapper so `.fragment-wrapper` is preserved for styling
+    const children = [...fragment.querySelectorAll(':scope > .section')]
+      .flatMap((fragSection) => [...fragSection.childNodes]);
+    wrapper.replaceChildren(...children);
   } else {
-    // fragment shares section with other children; flatten children into it
-    fragment.querySelectorAll(':scope > .section').forEach((fragSection) => {
-      [...fragSection.childNodes].forEach((child) => wrapper.before(child));
-    });
-    wrapper.remove();
+    // no wrapper (e.g. auto-blocked fragment); flatten in place
+    const children = [...fragment.querySelectorAll(':scope > .section')]
+      .flatMap((fragSection) => [...fragSection.childNodes]);
+    block.replaceWith(...children);
   }
 }
