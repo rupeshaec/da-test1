@@ -188,6 +188,42 @@ function createImageSplitColumns(cell) {
   return columns;
 }
 
+function createCopyMediaColumns(cell, layout) {
+  const copy = [];
+  const media = [];
+  let foundPicture = false;
+
+  [...cell.childNodes].forEach((node) => {
+    if (node.nodeType === Node.TEXT_NODE && !node.textContent.trim()) {
+      return;
+    }
+
+    if (containsPicture(node)) {
+      foundPicture = true;
+      media.push(node);
+      return;
+    }
+
+    if (foundPicture) {
+      media.push(node);
+    } else {
+      copy.push(node);
+    }
+  });
+
+  if (layout === 'media-copy') {
+    return [
+      createColumn(media, 0),
+      createColumn(copy, 1),
+    ].filter((column) => column.hasChildNodes());
+  }
+
+  return [
+    createColumn(copy, 0),
+    createColumn(media, 1),
+  ].filter((column) => column.hasChildNodes());
+}
+
 function createFeatureRow(sourceRow, rowIndex) {
   const cells = [...sourceRow.children];
 
@@ -217,6 +253,8 @@ function createFeatureRow(sourceRow, rowIndex) {
     inner.append(...createMosaicColumns(cells[0]));
   } else if (layout === 'image-split' && cells.length === 1) {
     inner.append(...createImageSplitColumns(cells[0]));
+  } else if (['copy-media', 'media-copy'].includes(layout) && cells.length === 1) {
+    inner.append(...createCopyMediaColumns(cells[0], layout));
   } else {
     cells.forEach((cell, cellIndex) => {
       inner.append(createColumn([...cell.childNodes], cellIndex));
@@ -224,6 +262,8 @@ function createFeatureRow(sourceRow, rowIndex) {
   }
 
   section.append(inner);
+  section.classList.toggle('features-accordion-row--has-media', !!section.querySelector('picture'));
+  section.classList.toggle('features-accordion-row--text-only', !section.querySelector('picture'));
 
   return section;
 }
