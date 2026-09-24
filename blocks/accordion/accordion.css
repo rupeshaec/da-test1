@@ -1,61 +1,121 @@
-.accordion details {
-  border: 1px solid #dadada;
+/*
+ * Accordion Block
+ * https://www.aem.live/developer/block-collection/accordion
+ */
+
+.accordion {
+  --accordion-surface: var(--color-brand-tint);
+  --accordion-surface-hover: #e3ecfd;
+  --accordion-surface-body: var(--color-surface);
+  --accordion-divider: var(--background-color);
+  --accordion-pad-x: 24px;
+  --accordion-pad-y: 16px;
+  --accordion-marker-size: 8px;
+  --accordion-marker-gap: 14px;
+
+  /*
+   * Stacked accordions read as separate cards, not one slab. The margin sits
+   * on the block itself (rather than on adjacent wrappers) so it survives
+   * whatever wraps it — most importantly a fragment per accordion, where each
+   * .accordion-wrapper is an only child of its own .fragment-wrapper and no
+   * sibling selector can reach across.
+   */
+  margin-block-end: 1px;
 }
 
-/* stylelint-disable-next-line no-descending-specificity */
-.accordion details + details {
-  margin-top: 24px;
+.accordion .accordion-item {
+  border: 0;
+  background-color: var(--accordion-surface);
+
+  /* clip the white body against the group's rounded ends */
+  overflow: hidden;
 }
 
-.accordion details p {
-  margin-bottom: 0.8em;
+/* consecutive items read as one card: hairline between, rounded ends only */
+.accordion .accordion-item + .accordion-item {
+  box-shadow: inset 0 1px 0 var(--accordion-divider);
 }
 
-.accordion details summary {
-  position: relative;
-  padding: 0 16px;
-  padding-right: 46px;
-  cursor: pointer;
+.accordion .accordion-item:first-of-type {
+  border-radius: var(--radius-m) var(--radius-m) 0 0;
+}
+
+.accordion .accordion-item:last-of-type {
+  border-radius: 0 0 var(--radius-m) var(--radius-m);
+}
+
+.accordion .accordion-item:only-of-type {
+  border-radius: var(--radius-m);
+}
+
+.accordion .accordion-item-label {
+  display: flex;
+  align-items: center;
+  gap: var(--accordion-marker-gap);
+  padding: var(--accordion-pad-y) var(--accordion-pad-x);
+  color: var(--color-ink);
+  font-size: var(--body-font-size-s);
+  font-weight: 700;
+  line-height: 1.5;
   list-style: none;
-  overflow: auto;
+  cursor: pointer;
   transition: background-color 0.2s;
 }
 
-.accordion details[open] summary {
-  background-color: var(--light-color);
-}
-
-.accordion details summary:focus,
-.accordion details summary:hover {
-  background-color: var(--light-color);
-}
-
-.accordion details summary::-webkit-details-marker {
+.accordion .accordion-item-label::-webkit-details-marker {
   display: none;
 }
 
-.accordion details summary::after {
+/* chevron: points right when collapsed, down when expanded */
+.accordion .accordion-item-label::before {
   content: '';
-  position: absolute;
-  top: 50%;
-  right: 18px;
-  transform: translateY(-50%) rotate(135deg);
-  width: 6px;
-  height: 6px;
-  border: 2px solid;
+  flex: 0 0 auto;
+  width: var(--accordion-marker-size);
+  height: var(--accordion-marker-size);
+  border: solid currentcolor;
   border-width: 2px 2px 0 0;
-  transition: transform 0.2s;
+  transform: rotate(45deg) translate(-2px, 2px);
+  transition: transform 0.2s ease;
 }
 
-.accordion details[open] summary::after {
-  transform: translateY(-50%) rotate(-45deg);
+.accordion .accordion-item-label > * {
+  margin: 0;
+  font: inherit;
+  color: inherit;
 }
 
-.accordion details .accordion-item-body {
-  padding: 0 16px;
+.accordion .accordion-item-label:hover {
+  background-color: var(--accordion-surface-hover);
 }
 
-.accordion details[open] .accordion-item-body {
-  border-top: 1px solid #dadada;
-  background-color: var(--background-color);
+.accordion .accordion-item-label:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: -2px;
+}
+
+.accordion .accordion-item[open] > .accordion-item-label::before {
+  transform: rotate(135deg) translate(-2px, 2px);
+}
+
+/* the expanded panel drops onto a white surface; the label row stays tinted */
+.accordion .accordion-item-body {
+  padding: 14px var(--accordion-pad-x) 28px;
+  background-color: var(--accordion-surface-body);
+  color: var(--text-color);
+  font-size: var(--body-font-size-s);
+}
+
+.accordion .accordion-item-body > *:first-child {
+  margin-top: 0;
+}
+
+.accordion .accordion-item-body > *:last-child {
+  margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accordion .accordion-item-label,
+  .accordion .accordion-item-label::before {
+    transition: none;
+  }
 }
