@@ -313,7 +313,7 @@
   .features-accordion-row-inner {
   overflow: hidden;
   width: calc(100% - 128px);
-  max-width: 960px;
+  max-width: 1200px;
   padding: 48px;
   border-radius: var(--features-card-radius);
   background: #fff;
@@ -501,6 +501,11 @@
 /* Tablet and mobile */
 
 @media (width < 768px) {
+  .features-accordion {
+    --features-gap: 32px;
+    --features-mobile-gutter: 20px;
+  }
+
   .features-accordion-trigger {
     min-height: 56px;
     padding: 16px;
@@ -530,7 +535,16 @@
 
   .features-accordion-row-inner {
     gap: 24px;
-    padding: 32px 20px;
+    padding: 12px var(--features-mobile-gutter);
+  }
+
+  .features-accordion-row--image-center.features-accordion-row--highlight
+    .features-accordion-column,
+  .features-accordion-row--feature-grid
+    .features-accordion-column,
+  .features-accordion-row--feature-mosaic
+    .features-accordion-column {
+    border-radius: var(--features-card-radius);
   }
 
   /*
@@ -553,7 +567,7 @@
 
   .features-accordion-row--image-split.features-accordion-row--highlight
     .features-accordion-row-inner {
-    width: calc(100% - 40px);
+    width: calc(100% - (var(--features-mobile-gutter) * 2));
     padding: 32px 20px;
   }
 
@@ -561,7 +575,7 @@
     .features-accordion-row-inner,
   .features-accordion-row--media-copy.features-accordion-row--highlight.features-accordion-row--has-media
     .features-accordion-row-inner {
-    width: calc(100% - 40px);
+    width: calc(100% - (var(--features-mobile-gutter) * 2));
     padding: 32px 24px;
   }
 
