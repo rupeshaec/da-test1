@@ -5,6 +5,8 @@ const LAYOUTS = new Set([
   'media-copy',
   'copy-copy',
   'feature-grid',
+  'image-split',
+  'feature-mosaic',
 ]);
 
 const VARIANTS = new Set([
@@ -70,6 +72,122 @@ function decorateLinks(container) {
   });
 }
 
+function containsPicture(node) {
+  return node.nodeType === Node.ELEMENT_NODE
+    && (node.matches('picture') || node.querySelector('picture'));
+}
+
+function createColumn(nodes, columnIndex) {
+  const column = document.createElement('div');
+
+  column.classList.add(
+    'features-accordion-column',
+    `features-accordion-column--${columnIndex + 1}`,
+  );
+
+  nodes.forEach((node) => {
+    column.append(node);
+  });
+
+  decoratePictures(column);
+  decorateLinks(column);
+
+  return column;
+}
+
+function createColumnsByPictures(cell) {
+  const columns = [];
+  const nodes = [...cell.childNodes]
+    .filter((node) => node.nodeType !== Node.TEXT_NODE || node.textContent.trim());
+
+  for (let index = 0; index < nodes.length;) {
+    const columnNodes = [];
+    const startsWithPicture = containsPicture(nodes[index]);
+
+    while (index < nodes.length) {
+      const node = nodes[index];
+      const isPicture = containsPicture(node);
+
+      if (columnNodes.length && startsWithPicture && isPicture) {
+        break;
+      }
+
+      columnNodes.push(node);
+      index += 1;
+
+      if (!startsWithPicture && isPicture) {
+        break;
+      }
+    }
+
+    columns.push(createColumn(columnNodes, columns.length));
+  }
+
+  return columns;
+}
+
+function createMosaicColumns(cell) {
+  const columns = [];
+  const nodes = [...cell.childNodes]
+    .filter((node) => node.nodeType !== Node.TEXT_NODE || node.textContent.trim());
+  let columnNodes = [];
+
+  nodes.forEach((node) => {
+    columnNodes.push(node);
+
+    if (containsPicture(node)) {
+      columns.push(createColumn(columnNodes, columns.length));
+      columnNodes = [];
+    }
+  });
+
+  if (columnNodes.length) {
+    columns.push(createColumn(columnNodes, columns.length));
+  }
+
+  return columns;
+}
+
+function createImageSplitColumns(cell) {
+  const columns = [];
+  const before = [];
+  const after = [];
+  let picture;
+  let foundPicture = false;
+
+  [...cell.childNodes].forEach((node) => {
+    if (node.nodeType === Node.TEXT_NODE && !node.textContent.trim()) {
+      return;
+    }
+
+    if (!foundPicture && containsPicture(node)) {
+      picture = node;
+      foundPicture = true;
+      return;
+    }
+
+    if (foundPicture) {
+      after.push(node);
+    } else {
+      before.push(node);
+    }
+  });
+
+  if (before.length) {
+    columns.push(createColumn(before, columns.length));
+  }
+
+  if (picture) {
+    columns.push(createColumn([picture], columns.length));
+  }
+
+  if (after.length) {
+    columns.push(createColumn(after, columns.length));
+  }
+
+  return columns;
+}
+
 function createFeatureRow(sourceRow, rowIndex) {
   const cells = [...sourceRow.children];
 
@@ -93,32 +211,46 @@ function createFeatureRow(sourceRow, rowIndex) {
   const inner = document.createElement('div');
   inner.className = 'features-accordion-row-inner';
 
-  cells.forEach((cell, cellIndex) => {
-    const column = document.createElement('div');
-
-    column.classList.add(
-      'features-accordion-column',
-      `features-accordion-column--${cellIndex + 1}`,
-    );
-
-    while (cell.firstChild) {
-      column.append(cell.firstChild);
-    }
-
-    decoratePictures(column);
-    decorateLinks(column);
-
-    inner.append(column);
-  });
+  if (layout === 'feature-grid' && cells.length === 1) {
+    inner.append(...createColumnsByPictures(cells[0]));
+  } else if (layout === 'feature-mosaic' && cells.length === 1) {
+    inner.append(...createMosaicColumns(cells[0]));
+  } else if (layout === 'image-split' && cells.length === 1) {
+    inner.append(...createImageSplitColumns(cells[0]));
+  } else {
+    cells.forEach((cell, cellIndex) => {
+      inner.append(createColumn([...cell.childNodes], cellIndex));
+    });
+  }
 
   section.append(inner);
 
   return section;
 }
 
-function setExpandedState(summary, content, expanded) {
-  summary.setAttribute('aria-expanded', String(expanded));
-  content.hidden = !expanded;
+function setExpandedState(trigger, content, expanded) {
+  trigger.setAttribute('aria-expanded', String(expanded));
+  trigger.classList.toggle('features-accordion-trigger--active', expanded);
+  content.classList.toggle('features-accordion-content--visible', expanded);
+
+  if (expanded) {
+    content.hidden = false;
+    requestAnimationFrame(() => {
+      content.classList.add('features-accordion-content--expanded');
+    });
+  } else {
+    if (!content.classList.contains('features-accordion-content--visible')) {
+      content.hidden = true;
+      return;
+    }
+
+    content.classList.remove('features-accordion-content--expanded');
+    content.addEventListener('transitionend', () => {
+      if (trigger.getAttribute('aria-expanded') === 'false') {
+        content.hidden = true;
+      }
+    }, { once: true });
+  }
 }
 
 export default function decorate(block) {
@@ -167,7 +299,7 @@ export default function decorate(block) {
   triggerIcon.className = 'features-accordion-icon';
   triggerIcon.setAttribute('aria-hidden', 'true');
 
-  trigger.append(triggerLabel, triggerIcon);
+  trigger.append(triggerIcon, triggerLabel);
   heading.append(trigger);
 
   const content = document.createElement('div');
