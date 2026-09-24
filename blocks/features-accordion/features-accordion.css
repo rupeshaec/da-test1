@@ -13,8 +13,8 @@
 
 .features-accordion-container {
   overflow: hidden;
-  border-top: 1px solid var(--features-border);
-  border-radius: var(--features-radius);
+  border-top: 0;
+  border-radius: 8px;
   background: transparent;
 }
 
@@ -26,14 +26,14 @@
 .features-accordion-trigger {
   display: flex;
   width: 100%;
-  min-height: 58px;
+  min-height: 72px;
   align-items: center;
   justify-content: flex-start;
-  gap: 14px;
-  padding: 16px 24px;
+  gap: 20px;
+  padding: 24px 28px;
   border: 0;
-  background: #eef4ff;
-  color: #1a2e61;
+  background: #eaf1ff;
+  color: #071d2b;
   cursor: pointer;
   font: inherit;
   font-size: 16px;
@@ -45,9 +45,9 @@
 
 .features-accordion-trigger:hover,
 .features-accordion-trigger--active {
-  background: #f4f7ff;
-  color: #06c;
-  font-weight: 400;
+  background: #eaf1ff;
+  color: #071d2b;
+  font-weight: 700;
 }
 
 .features-accordion-trigger:focus-visible {
@@ -61,18 +61,18 @@
 
 .features-accordion-icon {
   position: relative;
-  width: 10px;
-  height: 10px;
-  flex: 0 0 10px;
-  border-right: 1px solid currentcolor;
-  border-bottom: 1px solid currentcolor;
+  width: 11px;
+  height: 11px;
+  flex: 0 0 11px;
+  border-right: 2px solid currentcolor;
+  border-bottom: 2px solid currentcolor;
   transform: rotate(-45deg);
   transition: transform 0.2s ease;
 }
 
 .features-accordion-trigger[aria-expanded='true']
   .features-accordion-icon {
-  transform: translateY(3px) rotate(225deg);
+  transform: translateY(-2px) rotate(45deg);
 }
 
 .features-accordion-content[hidden] {
