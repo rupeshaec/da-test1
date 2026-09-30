@@ -49,6 +49,7 @@ function getEndpoint(cell) {
 function createPlan() {
   return {
     heading: null,
+    offer: null,
     endpoint: '',
     features: [],
     accordions: [],
@@ -161,6 +162,13 @@ function decorateAccordions(plan, card) {
   card.append(list);
 }
 
+function createOffer(content) {
+  const offer = document.createElement('div');
+  offer.className = 'plan-selection-offer';
+  if (content) appendAuthoredContent(offer, content);
+  return offer;
+}
+
 function decorateCta(plan, card) {
   if (plan.ctaLink) {
     const link = document.createElement('div');
@@ -196,12 +204,6 @@ function renderPlanDetails(card, data) {
   const details = document.createElement('div');
   details.className = 'plan-selection-details';
 
-  const offer = document.createElement('div');
-  offer.className = 'plan-selection-offer';
-  appendApiValue(offer, data, 'discount', 'plan-selection-discount');
-  appendApiValue(offer, data, 'discountLabel', 'plan-selection-discount-label');
-  if (offer.childElementCount) details.append(offer);
-
   const pricing = document.createElement('div');
   pricing.className = 'plan-selection-pricing';
   appendApiValue(pricing, data, 'data', 'plan-selection-data');
@@ -222,7 +224,15 @@ function renderPlanDetails(card, data) {
   appendApiValue(disclaimer, data, 'disclaimer', 'plan-selection-disclaimer-text');
   if (disclaimer.childElementCount) details.append(disclaimer);
 
-  card.prepend(details);
+  const authoredOffer = card.querySelector('.plan-selection-offer--authored');
+  const apiOffer = document.createElement('div');
+  apiOffer.className = 'plan-selection-offer';
+  appendApiValue(apiOffer, data, 'discount', 'plan-selection-discount');
+  appendApiValue(apiOffer, data, 'discountLabel', 'plan-selection-discount-label');
+
+  const heading = card.querySelector('.plan-selection-heading');
+  if (apiOffer.childElementCount && !authoredOffer) heading.after(apiOffer);
+  (authoredOffer || (apiOffer.childElementCount ? apiOffer : heading)).after(details);
 }
 
 async function loadPlanDetails(card, endpoint) {
@@ -257,6 +267,12 @@ function createCard(plan, index) {
   appendAuthoredContent(heading, plan.heading);
   if (!heading.textContent.trim()) heading.textContent = `Plan ${index + 1}`;
   card.append(heading);
+
+  if (plan.offer) {
+    const offer = createOffer(plan.offer);
+    offer.classList.add('plan-selection-offer--authored');
+    heading.after(offer);
+  }
 
   decorateFeatures(plan, card);
   decorateAccordions(plan, card);
@@ -301,6 +317,9 @@ export default function decorate(block) {
       switch (field) {
         case 'heading':
           plan.heading = getCellContent(cell);
+          break;
+        case 'offer':
+          plan.offer = getCellContent(cell);
           break;
         case 'plandetails':
           plan.endpoint = getEndpoint(cell);

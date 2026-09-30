@@ -33,6 +33,7 @@
 }
 
 .plan-selection-offer {
+  position: relative;
   display: flex;
   min-height: 32px;
   align-items: center;
@@ -42,6 +43,30 @@
   color: #071d2b;
   font-size: 13px;
   font-weight: 700;
+}
+
+.plan-selection-offer::before {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  background: currentcolor;
+  clip-path: polygon(28% 0, 100% 0, 100% 72%, 72% 100%, 0 28%);
+  content: '';
+}
+
+.plan-selection-offer::after {
+  position: absolute;
+  top: 11px;
+  left: 20px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #f9573f;
+  content: '';
+}
+
+.plan-selection-offer > :first-child {
+  margin: 0;
 }
 
 .plan-selection-pricing {
