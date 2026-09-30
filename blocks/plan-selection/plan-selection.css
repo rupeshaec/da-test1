@@ -146,11 +146,12 @@
 }
 
 .plan-selection-accordion-label {
+  box-sizing: border-box;
   display: flex;
-  min-height: 58px;
+  min-height: 60px;
   align-items: center;
   gap: 10px;
-  padding: 12px 4px;
+  padding: 8px 4px;
   font-size: 14px;
   font-weight: 700;
   line-height: 1.4;
@@ -208,7 +209,7 @@
   padding-top: 16px;
 }
 
-.plan-selection-button {
+.plan-selection-cta-button a.plan-selection-button:any-link {
   box-sizing: border-box;
   display: flex;
   min-height: 46px;
@@ -224,12 +225,18 @@
   text-decoration: none;
 }
 
-.plan-selection-button:hover {
+.plan-selection-cta-button a.plan-selection-button:hover,
+.plan-selection-cta-button a.plan-selection-button:focus-visible {
+  color: #fff;
+  text-decoration: none;
+}
+
+.plan-selection-cta-button a.plan-selection-button:hover {
   background: #0b45c5;
 }
 
 .plan-selection-accordion-label:focus-visible,
-.plan-selection-button:focus-visible {
+.plan-selection-cta-button a.plan-selection-button:focus-visible {
   outline: 2px solid #1464f4;
   outline-offset: 2px;
 }
