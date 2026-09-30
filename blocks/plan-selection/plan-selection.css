@@ -1,0 +1,251 @@
+.plan-selection {
+  color: #111936;
+}
+
+.plan-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 20px;
+}
+
+.plan-selection-card {
+  box-sizing: border-box;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 0 12px 16px;
+  border: 1px solid #d4d0cb;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 18px rgb(0 0 0 / 10%);
+}
+
+.plan-selection-heading {
+  margin: 0 -12px 16px;
+  padding: 20px 16px 8px;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.plan-selection-details {
+  margin: 0 -12px 12px;
+}
+
+.plan-selection-offer {
+  display: flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: #f9573f;
+  color: #071d2b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.plan-selection-pricing {
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px;
+}
+
+.plan-selection-data,
+.plan-selection-price-value {
+  color: #0754e8;
+  font-size: clamp(20px, 2vw, 26px);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.plan-selection-price {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.plan-selection-price-value {
+  color: #111936;
+}
+
+.plan-selection-price-unit {
+  font-size: 12px;
+}
+
+.plan-selection-usual-price,
+.plan-selection-disclaimer {
+  padding: 0 14px 10px;
+  font-size: 12px;
+  text-align: right;
+}
+
+.plan-selection-disclaimer {
+  min-height: 38px;
+  padding-top: 8px;
+  border-bottom: 1px solid #d4d0cb;
+  font-size: 14px;
+  text-align: left;
+}
+
+.plan-selection-features {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0 0 16px;
+  border-bottom: 1px solid #d4d0cb;
+  list-style: none;
+}
+
+.plan-selection-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.plan-selection-features li > :first-child {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.plan-selection-features picture,
+.plan-selection-features img {
+  display: block;
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.plan-selection-features a:any-link,
+.plan-selection-cta-link a:any-link {
+  color: #06c;
+}
+
+.plan-selection-accordions {
+  margin-top: 12px;
+}
+
+.plan-selection-accordion {
+  border-bottom: 1px solid #d4d0cb;
+}
+
+.plan-selection-accordion-label {
+  display: flex;
+  min-height: 58px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 4px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  list-style: none;
+  cursor: pointer;
+}
+
+.plan-selection-accordion-label::-webkit-details-marker {
+  display: none;
+}
+
+.plan-selection-accordion-label::after {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  margin-left: auto;
+  border-right: 1.5px solid currentcolor;
+  border-bottom: 1.5px solid currentcolor;
+  content: '';
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 0.2s ease;
+}
+
+.plan-selection-accordion[open] > .plan-selection-accordion-label::after {
+  transform: rotate(225deg) translate(-2px, -1px);
+}
+
+.plan-selection-accordion-label > * {
+  margin: 0;
+  font: inherit;
+}
+
+.plan-selection-accordion-content {
+  padding: 0 4px 16px 32px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.plan-selection-accordion-content > :first-child {
+  margin-top: 0;
+}
+
+.plan-selection-accordion-content > :last-child {
+  margin-bottom: 0;
+}
+
+.plan-selection-cta-link {
+  margin-top: 16px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.plan-selection-cta-button {
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.plan-selection-button {
+  box-sizing: border-box;
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: 24px;
+  background: #1464f4;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.plan-selection-button:hover {
+  background: #0b45c5;
+}
+
+.plan-selection-accordion-label:focus-visible,
+.plan-selection-button:focus-visible {
+  outline: 2px solid #1464f4;
+  outline-offset: 2px;
+}
+
+.plan-selection-api-status {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.plan-selection-api-status[aria-live='assertive'] {
+  color: #b42318;
+}
+
+@media (width < 900px) {
+  .plan-selection-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width < 600px) {
+  .plan-selection-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plan-selection-accordion-label::after {
+    transition: none;
+  }
+}
