@@ -1,4 +1,4 @@
-const PLAN_COUNT = 3;
+const MAX_PLAN_COUNT = 3;
 
 const API_FIELDS = {
   data: ['data', 'dataAllowance', 'dataAmount'],
@@ -12,6 +12,18 @@ const API_FIELDS = {
 
 function normaliseLabel(value) {
   return value.trim().toLowerCase().replace(/[\s_-]+/g, '');
+}
+
+function getPlanCount(rows) {
+  const columnsRow = rows.find((row) => {
+    const label = row.children[0]?.textContent || '';
+    return ['column', 'columns'].includes(normaliseLabel(label));
+  });
+  const value = columnsRow?.children[1]?.textContent.trim();
+  const count = Number(value);
+  return Number.isInteger(count) && count >= 1 && count <= MAX_PLAN_COUNT
+    ? count
+    : MAX_PLAN_COUNT;
 }
 
 function getCellContent(cell) {
@@ -192,14 +204,16 @@ function createCard(plan, index) {
 }
 
 export default function decorate(block) {
-  const plans = Array.from({ length: PLAN_COUNT }, createPlan);
+  const rows = [...block.children];
+  const planCount = getPlanCount(rows);
+  const plans = Array.from({ length: planCount }, createPlan);
 
-  [...block.children].forEach((row) => {
+  rows.forEach((row) => {
     const cells = [...row.children];
     if (cells.length < 2) return;
 
     const field = normaliseLabel(cells[0].textContent);
-    const values = cells.slice(1, PLAN_COUNT + 1);
+    const values = cells.slice(1, planCount + 1);
 
     if (field === 'column' || field === 'columns') return;
 
@@ -218,9 +232,11 @@ export default function decorate(block) {
           plan.features = getCellContent(cell);
           break;
         case 'accordionicontext':
+        case 'accodionicontext':
           plan.accordions.push({ label: getCellContent(cell), content: null });
           break;
-        case 'accordioncontent': {
+        case 'accordioncontent':
+        case 'accodioncontent': {
           const accordion = plan.accordions[plan.accordions.length - 1];
           if (accordion) accordion.content = getCellContent(cell);
           break;
@@ -239,6 +255,8 @@ export default function decorate(block) {
 
   const grid = document.createElement('div');
   grid.className = 'plan-selection-grid';
+  grid.dataset.columns = String(planCount);
+  grid.style.setProperty('--plan-selection-columns', String(planCount));
   plans.forEach((plan, index) => grid.append(createCard(plan, index)));
   block.replaceChildren(grid);
 }
