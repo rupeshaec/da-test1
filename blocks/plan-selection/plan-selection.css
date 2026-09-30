@@ -123,6 +123,7 @@
 
 .plan-selection-feature-icon {
   flex: 0 0 18px;
+  margin: 0;
 }
 
 .plan-selection-feature-text {

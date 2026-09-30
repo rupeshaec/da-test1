@@ -61,6 +61,47 @@ function appendAuthoredContent(target, source) {
   if (source) target.append(...source.childNodes);
 }
 
+function getFeatureIcon(node) {
+  if (node.nodeType !== Node.ELEMENT_NODE) return null;
+  if (node.matches('picture, img, svg')) return node;
+  return node.querySelector('picture, img, svg');
+}
+
+function createFeatureItem(node, pairedText = null) {
+  const item = document.createElement('li');
+  const source = node.cloneNode(true);
+  const icon = getFeatureIcon(source);
+
+  if (!icon) {
+    item.append(source);
+    if (pairedText) item.append(pairedText);
+    return item;
+  }
+
+  let iconNode = icon;
+  const iconWrapper = icon.closest('span');
+  if (iconWrapper && !iconWrapper.textContent.trim()) iconNode = iconWrapper;
+  iconNode.classList.add('plan-selection-feature-icon');
+
+  const parent = iconNode.parentElement;
+  if (parent?.matches('p') && parent.childNodes.length === 1) {
+    iconNode = parent;
+    iconNode.classList.add('plan-selection-feature-icon');
+  } else {
+    iconNode.remove();
+  }
+  item.append(iconNode);
+
+  const text = document.createElement('span');
+  text.className = 'plan-selection-feature-text';
+  if (source !== iconNode && source.textContent.trim()) {
+    text.append(...source.childNodes);
+  }
+  if (pairedText) text.append(...pairedText.childNodes);
+  if (text.textContent.trim() || text.querySelector('a')) item.append(text);
+  return item;
+}
+
 function decorateFeatures(plan, card) {
   if (!plan.features.length) return;
 
@@ -71,29 +112,14 @@ function decorateFeatures(plan, card) {
       .filter((node) => node.nodeType !== Node.TEXT_NODE || node.textContent.trim());
     for (let index = 0; index < nodes.length; index += 1) {
       const node = nodes[index];
-      const iconOnly = node.nodeType === Node.ELEMENT_NODE
-        && !node.textContent.trim()
-        && node.querySelector('picture, img, svg');
-      const item = document.createElement('li');
+      const icon = getFeatureIcon(node);
+      const iconOnly = icon && !node.textContent.trim();
       if (iconOnly && nodes[index + 1]) {
-        let icon = node;
-        if (!node.matches('picture, img, svg')) {
-          icon = node.children.length === 1
-            ? node.firstElementChild
-            : node.querySelector('picture, img, svg');
-        }
-        icon?.classList.add('plan-selection-feature-icon');
-        const text = nodes[index + 1];
-        if (text.nodeType === Node.ELEMENT_NODE) {
-          text.classList.add('plan-selection-feature-text');
-        }
-        item.append(icon || node);
-        item.append(text);
+        list.append(createFeatureItem(node, nodes[index + 1]));
         index += 1;
       } else {
-        item.append(node);
+        list.append(createFeatureItem(node));
       }
-      list.append(item);
     }
   });
   card.append(list);
@@ -270,11 +296,10 @@ export default function decorate(block) {
           plan.features.push(getCellContent(cell));
           break;
         case 'accordionicontext':
-        case 'accodionicontext':
           plan.accordions.push({ label: getCellContent(cell), content: null });
           break;
         case 'accordioncontent':
-        case 'accodioncontent': {
+        {
           const accordion = plan.accordions[plan.accordions.length - 1];
           if (accordion) accordion.content = getCellContent(cell);
           break;
