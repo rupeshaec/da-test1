@@ -125,6 +125,19 @@ function decorateFeatures(plan, card) {
   card.append(list);
 }
 
+function syncFeatureHeights(grid) {
+  const featureLists = [...grid.querySelectorAll('.plan-selection-features')];
+  if (featureLists.length < 2) return;
+
+  featureLists.forEach((list) => {
+    list.style.minHeight = '';
+  });
+  const maxHeight = Math.max(...featureLists.map((list) => list.getBoundingClientRect().height));
+  featureLists.forEach((list) => {
+    list.style.minHeight = `${maxHeight}px`;
+  });
+}
+
 function decorateAccordions(plan, card) {
   if (!plan.accordions.length) return;
 
@@ -322,4 +335,13 @@ export default function decorate(block) {
   grid.style.setProperty('--plan-selection-columns', String(planCount));
   plans.forEach((plan, index) => grid.append(createCard(plan, index)));
   block.replaceChildren(grid);
+
+  syncFeatureHeights(grid);
+  if (typeof ResizeObserver !== 'undefined') {
+    const observer = new ResizeObserver(() => syncFeatureHeights(grid));
+    observer.observe(grid);
+    grid.querySelectorAll('.plan-selection-features').forEach((list) => {
+      observer.observe(list);
+    });
+  }
 }
