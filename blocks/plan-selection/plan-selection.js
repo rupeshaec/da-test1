@@ -50,7 +50,7 @@ function createPlan() {
   return {
     heading: null,
     endpoint: '',
-    features: null,
+    features: [],
     accordions: [],
     ctaLink: null,
     ctaButton: null,
@@ -62,15 +62,17 @@ function appendAuthoredContent(target, source) {
 }
 
 function decorateFeatures(plan, card) {
-  if (!plan.features) return;
+  if (!plan.features.length) return;
 
   const list = document.createElement('ul');
   list.className = 'plan-selection-features';
-  [...plan.features.childNodes].forEach((node) => {
-    if (node.nodeType === Node.TEXT_NODE && !node.textContent.trim()) return;
-    const item = document.createElement('li');
-    item.append(node);
-    list.append(item);
+  plan.features.forEach((feature) => {
+    [...feature.childNodes].forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE && !node.textContent.trim()) return;
+      const item = document.createElement('li');
+      item.append(node);
+      list.append(item);
+    });
   });
   card.append(list);
 }
@@ -180,7 +182,7 @@ async function loadPlanDetails(card, endpoint) {
     renderPlanDetails(card, data);
     status.remove();
   } catch (error) {
-    status.textContent = error.message || 'Plan details could not be loaded.';
+    status.textContent = 'Plan pricing is currently unavailable.';
     status.setAttribute('aria-live', 'assertive');
   }
 }
@@ -206,20 +208,34 @@ function createCard(plan, index) {
 export default function decorate(block) {
   const rows = [...block.children];
   const planCount = getPlanCount(rows);
-  const plans = Array.from({ length: planCount }, createPlan);
+  const hasPlanColumns = rows.some((row) => (
+    normaliseLabel(row.children[0]?.textContent || '') === 'heading'
+    && row.children.length > 2
+  ));
+  const plans = hasPlanColumns ? Array.from({ length: planCount }, createPlan) : [];
+  let currentPlan = null;
 
   rows.forEach((row) => {
     const cells = [...row.children];
     if (cells.length < 2) return;
 
     const field = normaliseLabel(cells[0].textContent);
-    const values = cells.slice(1, planCount + 1);
 
     if (field === 'column' || field === 'columns') return;
 
-    plans.forEach((plan, index) => {
-      const cell = values[index];
-      if (!cell) return;
+    if (!hasPlanColumns && field === 'heading') {
+      if (plans.length >= planCount) return;
+      currentPlan = createPlan();
+      plans.push(currentPlan);
+    }
+
+    const values = hasPlanColumns
+      ? cells.slice(1, planCount + 1)
+      : [cells[1]];
+
+    values.forEach((cell, index) => {
+      const plan = hasPlanColumns ? plans[index] : currentPlan;
+      if (!cell || !plan) return;
 
       switch (field) {
         case 'heading':
@@ -229,7 +245,7 @@ export default function decorate(block) {
           plan.endpoint = getEndpoint(cell);
           break;
         case 'iconlefttextflow':
-          plan.features = getCellContent(cell);
+          plan.features.push(getCellContent(cell));
           break;
         case 'accordionicontext':
         case 'accodionicontext':

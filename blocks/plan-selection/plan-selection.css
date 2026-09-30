@@ -107,17 +107,18 @@
   line-height: 1.45;
 }
 
-.plan-selection-features li > :first-child {
-  flex: 0 0 auto;
-  margin: 0;
-}
-
 .plan-selection-features picture,
 .plan-selection-features img {
   display: block;
   width: 18px;
   height: 18px;
   object-fit: contain;
+}
+
+.plan-selection-features li > picture,
+.plan-selection-features li > img {
+  flex: 0 0 18px;
+  margin: 0;
 }
 
 .plan-selection-features a:any-link,
