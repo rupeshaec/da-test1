@@ -9,6 +9,12 @@
   gap: 20px;
 }
 
+.plan-selection-column {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
 .plan-selection-card {
   box-sizing: border-box;
   display: flex;
@@ -19,6 +25,11 @@
   border-radius: 8px;
   background: #fff;
   box-shadow: 0 8px 18px rgb(0 0 0 / 10%);
+}
+
+.plan-selection-card-with-offer {
+  border-top: 0;
+  border-radius: 0 0 8px 8px;
 }
 
 .plan-selection-heading {
@@ -43,6 +54,10 @@
   color: #071d2b;
   font-size: 13px;
   font-weight: 700;
+}
+
+.plan-selection-column > .plan-selection-offer {
+  border-radius: 7px 7px 0 0;
 }
 
 .plan-selection-offer::before {

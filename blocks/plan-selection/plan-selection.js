@@ -224,15 +224,20 @@ function renderPlanDetails(card, data) {
   appendApiValue(disclaimer, data, 'disclaimer', 'plan-selection-disclaimer-text');
   if (disclaimer.childElementCount) details.append(disclaimer);
 
-  const authoredOffer = card.querySelector('.plan-selection-offer--authored');
   const apiOffer = document.createElement('div');
   apiOffer.className = 'plan-selection-offer';
   appendApiValue(apiOffer, data, 'discount', 'plan-selection-discount');
   appendApiValue(apiOffer, data, 'discountLabel', 'plan-selection-discount-label');
 
   const heading = card.querySelector('.plan-selection-heading');
-  if (apiOffer.childElementCount && !authoredOffer) heading.after(apiOffer);
-  (authoredOffer || (apiOffer.childElementCount ? apiOffer : heading)).after(details);
+  if (
+    apiOffer.childElementCount
+    && !card.parentElement.querySelector('.plan-selection-offer--authored')
+  ) {
+    card.before(apiOffer);
+    card.classList.add('plan-selection-card-with-offer');
+  }
+  heading.after(details);
 }
 
 async function loadPlanDetails(card, endpoint) {
@@ -259,6 +264,9 @@ async function loadPlanDetails(card, endpoint) {
 }
 
 function createCard(plan, index) {
+  const column = document.createElement('div');
+  column.className = 'plan-selection-column';
+
   const card = document.createElement('article');
   card.className = 'plan-selection-card';
 
@@ -266,20 +274,22 @@ function createCard(plan, index) {
   heading.className = 'plan-selection-heading';
   appendAuthoredContent(heading, plan.heading);
   if (!heading.textContent.trim()) heading.textContent = `Plan ${index + 1}`;
-  card.append(heading);
 
   if (plan.offer) {
     const offer = createOffer(plan.offer);
     offer.classList.add('plan-selection-offer--authored');
-    heading.after(offer);
+    column.append(offer);
+    card.classList.add('plan-selection-card-with-offer');
   }
+  card.append(heading);
 
   decorateFeatures(plan, card);
   decorateAccordions(plan, card);
   decorateCta(plan, card);
 
+  column.append(card);
   if (plan.endpoint) loadPlanDetails(card, plan.endpoint);
-  return card;
+  return column;
 }
 
 export default function decorate(block) {
