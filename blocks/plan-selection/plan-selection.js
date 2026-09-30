@@ -67,12 +67,34 @@ function decorateFeatures(plan, card) {
   const list = document.createElement('ul');
   list.className = 'plan-selection-features';
   plan.features.forEach((feature) => {
-    [...feature.childNodes].forEach((node) => {
-      if (node.nodeType === Node.TEXT_NODE && !node.textContent.trim()) return;
+    const nodes = [...feature.childNodes]
+      .filter((node) => node.nodeType !== Node.TEXT_NODE || node.textContent.trim());
+    for (let index = 0; index < nodes.length; index += 1) {
+      const node = nodes[index];
+      const iconOnly = node.nodeType === Node.ELEMENT_NODE
+        && !node.textContent.trim()
+        && node.querySelector('picture, img, svg');
       const item = document.createElement('li');
-      item.append(node);
+      if (iconOnly && nodes[index + 1]) {
+        let icon = node;
+        if (!node.matches('picture, img, svg')) {
+          icon = node.children.length === 1
+            ? node.firstElementChild
+            : node.querySelector('picture, img, svg');
+        }
+        icon?.classList.add('plan-selection-feature-icon');
+        const text = nodes[index + 1];
+        if (text.nodeType === Node.ELEMENT_NODE) {
+          text.classList.add('plan-selection-feature-text');
+        }
+        item.append(icon || node);
+        item.append(text);
+        index += 1;
+      } else {
+        item.append(node);
+      }
       list.append(item);
-    });
+    }
   });
   card.append(list);
 }

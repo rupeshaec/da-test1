@@ -121,6 +121,16 @@
   margin: 0;
 }
 
+.plan-selection-feature-icon {
+  flex: 0 0 18px;
+}
+
+.plan-selection-feature-text {
+  min-width: 0;
+  flex: 1 1 auto;
+  margin: 0;
+}
+
 .plan-selection-features a:any-link,
 .plan-selection-cta-link a:any-link {
   color: #06c;
